@@ -16,4 +16,7 @@ public class currenciesHistory {
         }
         return currenciesHistory;
     }
+    public static Map<Date, allCurrencies> getCurrenciesMap() {
+        return currenciesMap;
+    }
 }

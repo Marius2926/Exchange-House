@@ -16,7 +16,7 @@ public class Client implements Valid {
 
     @Override
     public boolean checkValidity() {
-        if(this.firstName != "" && this.lastName != "" && this.address.checkValidity() && this.CNP.length() == 10)
+        if(this.firstName != "" && this.lastName != "" && this.address.checkValidity() && this.CNP.length() == 13)
             return true;
         return false;
     }
@@ -47,5 +47,15 @@ public class Client implements Valid {
 
     public String getCNP() {
         return CNP;
+    }
+
+    @Override
+    public String toString() {
+        return "Client{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", address=" + address +
+                ", CNP='" + CNP + '\'' +
+                '}';
     }
 }

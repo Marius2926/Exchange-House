@@ -4,48 +4,41 @@ import java.util.Date;
 
 public class Transaction {
     static private int numberOfTransactions = 0;
+    //tip 0 means the client sold currency, 1 means he bought currency
+    private int tip;
     private String CNP;
-    private int currencySoldId, CurrencyBoughtId;
-    private double valueSold, valueBought;
+    private int currencyId;
+    private double value;
     private Date date;
     private int id;
 
-    public Transaction(String CNP, int currencySoldId, int CurrencyBoughtId, double valueSold, double valueBought, Date date) {
+    public Transaction(int tip, String CNP, int currencyId, double value, Date date) {
+        this.tip = tip;
         this.CNP = CNP;
-        this.currencySoldId = currencySoldId;
-        this.CurrencyBoughtId = CurrencyBoughtId;
-        this.valueSold = valueSold;
-        this.valueBought = valueBought;
+        this.currencyId = currencyId;
+        this.value = value;
         this.date = date;
         this.id = ++numberOfTransactions;
+    }
+
+    public Transaction(Transaction transaction) {
+        this.tip = transaction.tip;
+        this.CNP = transaction.CNP;
+        this.currencyId = transaction.currencyId;
+        this.value = transaction.value;
+        this.date = new Date(transaction.date.getTime());
     }
 
     public String getCNP() {
         return CNP;
     }
 
-    public int getcurrencySoldId() {
-        return currencySoldId;
+    public int getcurrencyId() {
+        return currencyId;
     }
 
-    public int getCurrencyBoughtId() {
-        return CurrencyBoughtId;
-    }
-
-    public double getValueSold() {
-        return valueSold;
-    }
-
-    public void setValueSold(double valueSold) {
-        this.valueSold = valueSold;
-    }
-
-    public double getValueBought() {
-        return valueBought;
-    }
-
-    public void setValueBought(double valueBought) {
-        this.valueBought = valueBought;
+    public double getValue() {
+        return value;
     }
 
     public Date getDate() {
@@ -59,12 +52,11 @@ public class Transaction {
     @Override
     public String toString() {
         return "Transaction{" +
-                "CNP='" + CNP + '\'' +
-                ", currencySoldId=" + currencySoldId +
-                ", CurrencyBoughtId=" + CurrencyBoughtId +
-                ", valueSold=" + valueSold +
-                ", valueBought=" + valueBought +
+                "tip='" + tip + '\'' +
+                ", CNP='" + CNP + '\'' +
+                ", currencyId=" + currencyId +
+                ", value=" + value +
                 ", date=" + date +
-                '}';
+                "}\n";
     }
 }

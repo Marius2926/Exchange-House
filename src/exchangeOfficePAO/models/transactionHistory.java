@@ -14,4 +14,16 @@ public class transactionHistory {
             transactionHistory = new transactionHistory();
         return transactionHistory;
     }
+
+    public static List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    @Override
+    public String toString() {
+        String result = "";
+        for(Transaction x : transactions)
+            result += x.toString();
+        return result;
+    }
 }

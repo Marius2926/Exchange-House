@@ -79,4 +79,16 @@ public class Address implements Valid {
             return true;
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "Address{" +
+                "tip=" + tip +
+                ", street='" + street + '\'' +
+                ", numberStreet=" + numberStreet +
+                ", numberBloc=" + numberBloc +
+                ", floor=" + floor +
+                ", numberApartment=" + numberApartment +
+                '}';
+    }
 }
