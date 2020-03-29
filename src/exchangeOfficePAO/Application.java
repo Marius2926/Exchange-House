@@ -39,6 +39,10 @@ public class Application {
         employeesList.add(new Cashier("Ana7", "Florescu", 0, 7));
         employeesList.add(new Cashier("Ana8", "Floreasca", 0, 8));
         employeesList.add(new Janitor("Lora","Viorescu", 3));
+        employeesList.add(new Guardian("Dorel","Dorescu",3));
+        employeesList.add(new Promoter("Aurica","Marcela",0));
+        employeesList.add(new Manager("John","Arthur",13));
+        employeesList.add(new Supervisor("Ionel","Hritcu",5));
         exchangeHouse exchangeHouse1 = new exchangeHouse(numberEmployees, deskNumbers, currencies, employeesList);
         //now we have the structure of the exchange house
         System.out.println(exchangeHouse1.toString());
@@ -97,5 +101,9 @@ public class Application {
         currenciesHistoryUtils.addCurrenciesHist(exchangeHouse1.getCurrenciesHistory(), new Date(), exchangeHouse1.getCurrencies());
         System.out.println("\n####################################\nGet currencies history:");
         System.out.println(exchangeHouse1.getCurrenciesHistory().getCurrenciesMap());
+
+        Collections.sort(exchangeHouse1.getEmployees(), new salaryEmployeesComparator());
+        System.out.println("\n####################################\nGet employees ordered by salary desc:");
+        System.out.println(exchangeHouse1.getEmployees());
     }
 }
