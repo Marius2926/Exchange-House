@@ -2,7 +2,9 @@ package exchangeOfficePAO.repository;
 
 
 import exchangeOfficePAO.models.Currency;
+import exchangeOfficePAO.service.AuditService;
 
+import java.io.IOException;
 import java.util.*;
 
 public class CurrenciesHistoryRepository {
@@ -14,8 +16,7 @@ public class CurrenciesHistoryRepository {
 
     public void addCurrenciesInHistory(Date date, List<Currency> currencyList) {
         CurrenciesRepository currencyRepository = new CurrenciesRepository(currencyList);
-        CurrenciesRepository newCurrencyRepository = new CurrenciesRepository(currencyRepository);
-        currenciesMap.put(date, newCurrencyRepository);
+        currenciesMap.put(date, currencyRepository);
     }
 
     public Map<Date, CurrenciesRepository> getAllHistory(){

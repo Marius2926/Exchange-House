@@ -179,6 +179,10 @@ public class IOService {
             fileWriter.append(',');
             fileWriter.append(client.getLastName());
             fileWriter.append(',');
+            if(client.getAddress().getTip() == 0)
+                fileWriter.append("0,");
+            else
+                fileWriter.append("1,");
             fileWriter.append(client.getAddress().getStreet());
             fileWriter.append(',');
             fileWriter.append(String.valueOf(client.getAddress().getNumberStreet()));
@@ -190,6 +194,8 @@ public class IOService {
                 fileWriter.append(',');
                 fileWriter.append(String.valueOf(client.getAddress().getNumberApartment()));
             }
+            fileWriter.append(',');
+            fileWriter.append(client.getCNP());
             fileWriter.append('\n');
         }
         fileWriter.close();
@@ -205,6 +211,7 @@ public class IOService {
         numberOfCurrencies = Integer.parseInt(data[0]);
         Currency.setNumberOfCurrencies(Integer.parseInt(data[1]));
         for(int i = 0; i < numberOfCurrencies; i++){
+            row = csvReader.readLine();
             data = row.split(",");
             currenciesService.addCurrency(new Currency(data[0], Double.parseDouble(data[1]), Double.parseDouble(data[2]), Double.parseDouble(data[3]), Integer.parseInt(data[4])));
         }
@@ -267,6 +274,9 @@ public class IOService {
             fileWriter.append(String.valueOf(transaction.getValue()));
             fileWriter.append(',');
             fileWriter.append(String.valueOf(transaction.getDate().getTime()));
+            fileWriter.append(',');
+            fileWriter.append(String.valueOf(transaction.getId()));
+            fileWriter.append('\n');
         }
         fileWriter.close();
     }

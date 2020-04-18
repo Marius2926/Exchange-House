@@ -1,8 +1,11 @@
 package exchangeOfficePAO.repository;
 
 import exchangeOfficePAO.models.Currency;
+import exchangeOfficePAO.service.AuditService;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CurrenciesRepository {
@@ -13,11 +16,16 @@ public class CurrenciesRepository {
     }
 
     public CurrenciesRepository(CurrenciesRepository currenciesRepository) {
-        this.currencyList = new ArrayList<>(currenciesRepository.getCurrencyList());
+        this.currencyList = new ArrayList<>();
+        List<Currency> otherList = currenciesRepository.getCurrencyList();
+        for(int i = 0; i < otherList.size(); i++)
+            this.currencyList.add(otherList.get(i));
     }
 
     public CurrenciesRepository(List<Currency> currencyList){
-        this.currencyList = new ArrayList<>(currencyList);
+        this.currencyList = new ArrayList<>();
+        for(int i = 0; i < currencyList.size(); i++)
+            this.currencyList.add(currencyList.get(i));
     }
 
     public List<Currency> getCurrencyList() {

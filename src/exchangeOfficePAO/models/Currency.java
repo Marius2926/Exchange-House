@@ -1,9 +1,8 @@
 package exchangeOfficePAO.models;
 
 import exchangeOfficePAO.interfaces.Transactional;
-import exchangeOfficePAO.interfaces.changebleRates;
 
-public class Currency implements changebleRates, Transactional {
+public class Currency implements Transactional {
     private static int numberOfCurrencies = 0;
     private String name;
     private double sellPrice, buyPrice, available;
@@ -24,16 +23,6 @@ public class Currency implements changebleRates, Transactional {
         this.buyPrice = buyPrice;
         this.available = available;
         this.id = id;
-    }
-
-    @Override
-    public void setNewSellPrice(double newSellPrice) {
-        this.sellPrice = newSellPrice;
-    }
-
-    @Override
-    public void setNewBuyPrice(double newBuyPrice) {
-        this.buyPrice = newBuyPrice;
     }
 
     @Override
