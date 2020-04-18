@@ -11,6 +11,10 @@ public class Cashier extends Employee{
         this.calculateSalary();
     }
 
+    public int getDeskNo() {
+        return deskNo;
+    }
+
     @Override
     protected void calculateSalary() {
         this.salary = baseSalary + experience * bonusPerYear;

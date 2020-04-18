@@ -1,66 +1,63 @@
 package exchangeOfficePAO.models;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import exchangeOfficePAO.service.*;
 
 public class exchangeHouse {
     private int hiredEmployees, DeskNumbers;
-    private allCurrencies currencies;
-    private Set<Client> clients = new HashSet<Client>();
-    private List<Employee> employees;
-    private currenciesHistory currenciesHistory = exchangeOfficePAO.models.currenciesHistory.getCurrenciesHistory();
-    private transactionHistory transactionHistory = exchangeOfficePAO.models.transactionHistory.getTransactionHistory();
+    private CurrenciesService currencies;
+    private ClientService clients;
+    private EmployeeService employees;
+    private CurrenciesHistoryService currenciesHistory;
+    private TransactionService transactionHistory;
 
-    public exchangeHouse(int hiredEmployees, int deskNumbers, allCurrencies currencies, List<Employee> employees) {
+    public exchangeHouse(int hiredEmployees, int deskNumbers, CurrenciesService currencies, EmployeeService employees) {
         this.hiredEmployees = hiredEmployees;
         this.DeskNumbers = deskNumbers;
         this.currencies = currencies;
         this.employees = employees;
+        this.clients = new ClientService();
+        this.currenciesHistory = new CurrenciesHistoryService();
+        this.transactionHistory = new TransactionService();
     }
 
-    public int getHiredEmployees() {
-        return hiredEmployees;
-    }
-
-    public void setHiredEmployees(int hiredEmployees) {
-        this.hiredEmployees = hiredEmployees;
-    }
-
-    public int getDeskNumbers() {
-        return DeskNumbers;
-    }
-
-    public void setDeskNumbers(int deskNumbers) {
-        DeskNumbers = deskNumbers;
-    }
-
-    public allCurrencies getCurrencies() {
+    public CurrenciesService getCurrencies() {
         return currencies;
     }
 
-    public void setCurrencies(allCurrencies currencies) {
+    public void setCurrencies(CurrenciesService currencies) {
         this.currencies = currencies;
     }
 
-    public Set<Client> getClients() {
+    public ClientService getClients() {
         return clients;
     }
 
-    public List<Employee> getEmployees() {
+    public void setClients(ClientService clients) {
+        this.clients = clients;
+    }
+
+    public EmployeeService getEmployees() {
         return employees;
     }
 
-    public void setEmployees(List<Employee> employees) {
+    public void setEmployees(EmployeeService employees) {
         this.employees = employees;
     }
 
-    public currenciesHistory getCurrenciesHistory() {
+    public CurrenciesHistoryService getCurrenciesHistory() {
         return currenciesHistory;
     }
 
-    public transactionHistory getTransactionHistory() {
+    public void setCurrenciesHistory(CurrenciesHistoryService currenciesHistory) {
+        this.currenciesHistory = currenciesHistory;
+    }
+
+    public TransactionService getTransactionHistory() {
         return transactionHistory;
+    }
+
+    public void setTransactionHistory(TransactionService transactionHistory) {
+        this.transactionHistory = transactionHistory;
     }
 
     @Override
@@ -68,7 +65,7 @@ public class exchangeHouse {
         String result = "";
         result += "Employees: " + this.hiredEmployees + " Number of desks: " + this.DeskNumbers + "\n";
         result += "Employees: \n";
-        for(Employee x : employees){
+        for(Employee x : employees.getEmployeeRepository()){
             result += x.toString();
         }
         result += "\n Currencies: \n";

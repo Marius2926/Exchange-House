@@ -18,6 +18,14 @@ public class Currency implements changebleRates, Transactional {
         numberOfCurrencies++;
     }
 
+    public Currency(String name, double sellPrice, double buyPrice, double available, int id) {
+        this.name = name;
+        this.sellPrice = sellPrice;
+        this.buyPrice = buyPrice;
+        this.available = available;
+        this.id = id;
+    }
+
     @Override
     public void setNewSellPrice(double newSellPrice) {
         this.sellPrice = newSellPrice;
@@ -26,10 +34,6 @@ public class Currency implements changebleRates, Transactional {
     @Override
     public void setNewBuyPrice(double newBuyPrice) {
         this.buyPrice = newBuyPrice;
-    }
-
-    public static int getNumberOfCurrencies() {
-        return numberOfCurrencies;
     }
 
     @Override
@@ -41,6 +45,13 @@ public class Currency implements changebleRates, Transactional {
     public void sellCurrency(int value) {
         this.available = this.available - value;
     }
+
+    public static int getNumberOfCurrencies() {
+        return numberOfCurrencies;
+    }
+
+
+    public static void setNumberOfCurrencies(int numberOfCurrencies) { Currency.numberOfCurrencies = numberOfCurrencies; }
 
     public String getName() {
         return name;
@@ -78,4 +89,14 @@ public class Currency implements changebleRates, Transactional {
         return id;
     }
 
+    @Override
+    public String toString() {
+        return "Currency{" +
+                "name='" + name + '\'' +
+                ", sellPrice=" + sellPrice +
+                ", buyPrice=" + buyPrice +
+                ", available=" + available +
+                ", id=" + id +
+                '}';
+    }
 }
