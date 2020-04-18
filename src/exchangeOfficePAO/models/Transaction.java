@@ -21,21 +21,31 @@ public class Transaction {
         this.id = ++numberOfTransactions;
     }
 
+    public Transaction(int tip, String CNP, int currencyId, double value, Date date, int id) {
+        this.tip = tip;
+        this.CNP = CNP;
+        this.currencyId = currencyId;
+        this.value = value;
+        this.date = date;
+        this.id = id;
+    }
+
     public Transaction(Transaction transaction) {
         this.tip = transaction.tip;
         this.CNP = transaction.CNP;
         this.currencyId = transaction.currencyId;
         this.value = transaction.value;
         this.date = new Date(transaction.date.getTime());
+        this.id = transaction.id;
     }
 
     public String getCNP() {
         return CNP;
     }
 
-    public int getcurrencyId() {
-        return currencyId;
-    }
+    public static int getNumberOfTransactions() { return numberOfTransactions; }
+
+    public static void setNumberOfTransactions(int numberOfTransactions) { Transaction.numberOfTransactions = numberOfTransactions; }
 
     public double getValue() {
         return value;
@@ -47,6 +57,34 @@ public class Transaction {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public int getTip() {
+        return tip;
+    }
+
+    public void setTip(int tip) {
+        this.tip = tip;
+    }
+
+    public void setCNP(String CNP) {
+        this.CNP = CNP;
+    }
+
+    public int getCurrencyId() {
+        return currencyId;
+    }
+
+    public void setCurrencyId(int currencyId) {
+        this.currencyId = currencyId;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
+
+    public int getId() {
+        return id;
     }
 
     @Override
