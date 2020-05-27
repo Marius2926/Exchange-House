@@ -9,6 +9,15 @@ public class Address implements Valid {
     private int numberBloc;
     private int floor;
     private int numberApartment;
+    private int addressId;
+
+    public int getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(int addressId) {
+        this.addressId = addressId;
+    }
 
     public Address(String street, int numberStreet) {
         this.tip = 0;

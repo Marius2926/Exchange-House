@@ -1,5 +1,6 @@
 package exchangeOfficePAO.models;
 
+import exchangeOfficePAO.database.DatabaseConnection;
 import exchangeOfficePAO.interfaces.Transactional;
 
 public class Currency implements Transactional {
@@ -26,13 +27,15 @@ public class Currency implements Transactional {
     }
 
     @Override
-    public void buyCurrency(int value) {
+    public void buyCurrency(double value) {
         this.available = this.available + value;
+        DatabaseConnection.getInstance().updateAmountCurrency(available, this.id);
     }
 
     @Override
-    public void sellCurrency(int value) {
+    public void sellCurrency(double value) {
         this.available = this.available - value;
+        DatabaseConnection.getInstance().updateAmountCurrency(available, this.id);
     }
 
     public static int getNumberOfCurrencies() {
@@ -77,6 +80,8 @@ public class Currency implements Transactional {
     public int getId() {
         return id;
     }
+
+
 
     @Override
     public String toString() {

@@ -1,45 +1,33 @@
 package exchangeOfficePAO.repository;
 
+import exchangeOfficePAO.database.DatabaseConnection;
+import exchangeOfficePAO.models.Client;
 import exchangeOfficePAO.models.Transaction;
-import exchangeOfficePAO.service.AuditService;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class TransactionRepository {
-    private List<Transaction> transactions;
 
-    public TransactionRepository() {
-        this.transactions = new ArrayList<>();
+    public TransactionRepository(){
     }
 
-    public void addTransaction(Transaction t){
-        transactions.add(t);
+    public void addTransaction(Transaction t, Client c){
+        DatabaseConnection.getInstance().insertTransaction(t, c);
     }
 
     public List<Transaction> getTransactions(){
-        return  transactions;
+        return  DatabaseConnection.getInstance().getTransactions();
     }
 
     public List<Transaction> getTransactionsAfterCNP(String cnp){
-        List<Transaction> specificTransactions = new ArrayList<Transaction>();
-        for(Transaction transaction : transactions){
-            if(transaction.getCNP() == cnp){
-                specificTransactions.add(new Transaction(transaction));
-            }
-        }
-        return specificTransactions;
+        return DatabaseConnection.getInstance().getTransactionsAfterCNP(cnp);
     }
 
-    public List<Transaction> getTransactionsAfterDate(Date date){
-        List<Transaction> specificTransactions = new ArrayList<Transaction>();
-        for(Transaction transaction : transactions){
-            if(transaction.getDate() == date){
-                specificTransactions.add(new Transaction(transaction));
-            }
-        }
-        return specificTransactions;
+    public List<Transaction> getTransactionsAfterDate(LocalDate date){
+        return DatabaseConnection.getInstance().getTransactionsAfterDate(date);
     }
 }

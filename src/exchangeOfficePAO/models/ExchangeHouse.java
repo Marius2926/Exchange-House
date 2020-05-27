@@ -1,19 +1,19 @@
 package exchangeOfficePAO.models;
 
-import exchangeOfficePAO.exceptions.JobNotFoundException;
+import exchangeOfficePAO.database.DatabaseConnection;
 import exchangeOfficePAO.service.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class ExchangeHouse {
-    private int hiredEmployees, DeskNumbers;
+    private int hiredEmployees, DeskNumbers = 8;
     private CurrenciesService currencies;
     private ClientService clients;
     private EmployeeService employees;
     private CurrenciesHistoryService currenciesHistory;
     private TransactionService transactionHistory;
-    private static String[] filePaths = {"./Files/currencies.csv", "./Files/employees.csv", "./Files/transactions.csv", "./Files/currenciesHistory.csv", "./Files/clients.csv"};
 
     public ExchangeHouse(int hiredEmployees, int deskNumbers, CurrenciesService currencies, EmployeeService employees) {
         this.hiredEmployees = hiredEmployees;
@@ -25,8 +25,11 @@ public class ExchangeHouse {
         this.transactionHistory = new TransactionService();
     }
 
-    public ExchangeHouse(int deskNumbers) {
-        this.DeskNumbers = deskNumbers;
+    public DatabaseConnection getDatabaseConnection() {
+        return DatabaseConnection.getInstance();
+    }
+
+    public ExchangeHouse() {
         this.currencies = new CurrenciesService();
         this.clients = new ClientService();
         this.employees = new EmployeeService();
@@ -74,39 +77,18 @@ public class ExchangeHouse {
         this.transactionHistory = transactionHistory;
     }
 
-    public void startDay(){
-        IOService ioService = IOService.getInstance();
-        try {
-            this.currencies = ioService.readCurrencies(filePaths[0]);
-            this.employees = ioService.readEmployees(filePaths[1]);
-            File file = new File(filePaths[2]);
-            if((file.exists() && file.isFile()) || file.length() != 0)
-                this.transactionHistory = ioService.readTransactions(filePaths[2]);
-            file = new File(filePaths[3]);
-            if((file.exists() && file.isFile()) || file.length() != 0)
-                this.currenciesHistory = ioService.readCurrenciesHistory(filePaths[3]);
-            file = new File(filePaths[4]);
-            if((file.exists() && file.isFile()) || file.length() != 0)
-                this.clients = ioService.readClients(filePaths[4]);
-            this.hiredEmployees = this.employees.getEmployeeRepository().size();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JobNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void closeDay(){
-        IOService ioService = IOService.getInstance();
-        try {
-            ioService.writeCurrencies(filePaths[0], this.getCurrencies());
-            ioService.writeEmployees(filePaths[1], this.getEmployees());
-            ioService.writeTransactions(filePaths[2], this.getTransactionHistory());
-            ioService.writeCurrenciesHistory(filePaths[3], this.getCurrenciesHistory());
-            ioService.writeClients(filePaths[4], this.getClients());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void updateCurrenciesForToday(){
+        List<Currency> currencyList = new ArrayList<>();
+        currencyList.add(new Currency("euro", 4.95, 4.76, 5000, 0));
+        currencyList.add(new Currency("dolar american", 4.55, 4.32, 5000, 1));
+        currencyList.add(new Currency("lira sterlina", 5.52, 5.20, 5000, 2));
+        currencyList.add(new Currency("franc elvetian", 4.65, 4.45, 5000, 3));
+        currencyList.add(new Currency("corona suedeza", 0.5, 0.43, 5000, 4));
+        currencyList.add(new Currency("dolar canadian", 3.25, 3.09, 5000, 5));
+        currencyList.add(new Currency("corona ceha", 0.2, 0.14, 5000, 6));
+        currencyList.add(new Currency("zlot polonez", 1.2, 1.03, 5000, 7));
+        currencyList.add(new Currency("leu moldovenesc", 0.23, 0.20, 5000, 8));
+        currencyList.forEach(this.getDatabaseConnection()::insertCurrency);
     }
 
     @Override

@@ -1,27 +1,26 @@
 package exchangeOfficePAO.models;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class Transaction {
-    static private int numberOfTransactions = 0;
     //tip 0 means the client sold currency, 1 means he bought currency
     private int tip;
     private String CNP;
     private int currencyId;
     private double value;
-    private Date date;
+    private LocalDate date;
     private int id;
 
-    public Transaction(int tip, String CNP, int currencyId, double value, Date date) {
+    public Transaction(int tip, String CNP, int currencyId, double value, LocalDate date) {
         this.tip = tip;
         this.CNP = CNP;
         this.currencyId = currencyId;
         this.value = value;
         this.date = date;
-        this.id = ++numberOfTransactions;
     }
 
-    public Transaction(int tip, String CNP, int currencyId, double value, Date date, int id) {
+    public Transaction(int tip, String CNP, int currencyId, double value, LocalDate date, int id) {
         this.tip = tip;
         this.CNP = CNP;
         this.currencyId = currencyId;
@@ -35,7 +34,7 @@ public class Transaction {
         this.CNP = transaction.CNP;
         this.currencyId = transaction.currencyId;
         this.value = transaction.value;
-        this.date = new Date(transaction.date.getTime());
+        this.date = LocalDate.from(transaction.date);
         this.id = transaction.id;
     }
 
@@ -43,19 +42,15 @@ public class Transaction {
         return CNP;
     }
 
-    public static int getNumberOfTransactions() { return numberOfTransactions; }
-
-    public static void setNumberOfTransactions(int numberOfTransactions) { Transaction.numberOfTransactions = numberOfTransactions; }
-
     public double getValue() {
         return value;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

@@ -1,17 +1,19 @@
 package exchangeOfficePAO.models;
 
+import java.time.LocalDate;
+
 public abstract class Employee {
     private static int numberEmployees = 0;
     protected int id;
     protected String firstName, lastName;
     protected double salary;
-    protected int experience;
+    protected LocalDate hireDate;
     abstract protected void calculateSalary();
 
-    public Employee(String firstName, String lastName, int experience) {
+    public Employee(String firstName, String lastName, LocalDate hireDate) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.experience = experience;
+        this.hireDate = hireDate;
         this.id = ++numberEmployees;
     }
 
@@ -31,10 +33,6 @@ public abstract class Employee {
         return salary;
     }
 
-    public int getExperience() {
-        return experience;
-    }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -43,7 +41,9 @@ public abstract class Employee {
         this.lastName = lastName;
     }
 
-    public void setExperience(int experience) {
-        this.experience = experience;
-    }
+    public LocalDate getHireDate() { return hireDate; }
+
+    public void setHireDate(LocalDate hireDate) { this.hireDate = hireDate; }
+
+    public abstract int getType();
 }

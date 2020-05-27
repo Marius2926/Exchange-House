@@ -1,12 +1,22 @@
 package exchangeOfficePAO.models;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 public class Cashier extends Employee{
     static final private double baseSalary = 2000;
     static final private double bonusPerYear = 100;
 
+    @Override
+    public int getType() {
+        return 0;
+    }
+
     private int deskNo;
-    public Cashier(String firstName, String lastName, int experience, int deskNo) {
-        super(firstName, lastName, experience);
+    public Cashier(String firstName, String lastName, LocalDate hireDate, int deskNo) {
+        super(firstName, lastName, hireDate);
         this.deskNo = deskNo;
         this.calculateSalary();
     }
@@ -17,6 +27,9 @@ public class Cashier extends Employee{
 
     @Override
     protected void calculateSalary() {
+        LocalDate actualDate = LocalDate.now();
+        Period period = Period.between(actualDate, hireDate);
+        int experience = period.getYears();
         this.salary = baseSalary + experience * bonusPerYear;
     }
 
@@ -28,7 +41,7 @@ public class Cashier extends Employee{
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", salary=" + salary +
-                ", experience=" + experience +
+                ", hireDate=" + hireDate.toString() +
                 "}\n";
     }
 }

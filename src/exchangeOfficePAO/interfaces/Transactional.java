@@ -1,6 +1,6 @@
 package exchangeOfficePAO.interfaces;
 
 public interface Transactional {
-    void buyCurrency(int value);
-    void sellCurrency(int value);
+    void buyCurrency(double value);
+    void sellCurrency(double value);
 }
