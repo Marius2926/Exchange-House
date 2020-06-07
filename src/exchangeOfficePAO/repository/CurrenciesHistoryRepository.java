@@ -2,32 +2,27 @@ package exchangeOfficePAO.repository;
 
 
 import exchangeOfficePAO.models.Currency;
-import exchangeOfficePAO.service.AuditService;
 
-import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 
 public class CurrenciesHistoryRepository {
-    private Map<Date, CurrenciesRepository> currenciesMap;
+    private Map<LocalDate, List<Currency>> currenciesMap;
 
     public CurrenciesHistoryRepository() {
         this.currenciesMap = new HashMap<>();
     }
 
-    public void addCurrenciesInHistory(Date date, List<Currency> currencyList) {
-        CurrenciesRepository currencyRepository = new CurrenciesRepository(currencyList);
-        currenciesMap.put(date, currencyRepository);
+    public void addCurrenciesInHistory(LocalDate date, List<Currency> currencyList) {
+        List<Currency> currencyList1 = new ArrayList<>(currencyList);
+        currenciesMap.put(date, currencyList1);
     }
 
-    public Map<Date, CurrenciesRepository> getAllHistory(){
+    public Map<LocalDate, List<Currency>> getAllHistory(){
         return currenciesMap;
     }
 
-    public CurrenciesRepository getHistoryDay(Date date){
-        if(currenciesMap.containsKey(date)){
-            return currenciesMap.get(date);
-        }
-        else
-            return null;
+    public List<Currency> getHistoryDay(LocalDate date){
+        return currenciesMap.getOrDefault(date, null);
     }
 }

@@ -1,26 +1,24 @@
 package exchangeOfficePAO.repository;
 
+import exchangeOfficePAO.database.DatabaseConnection;
 import exchangeOfficePAO.models.Client;
 
 import java.util.*;
 
 public class ClientRepository {
-    Set<Client> clientSet;
 
-    public ClientRepository() {
-        this.clientSet = new HashSet<>();
-    }
+    public ClientRepository(){}
 
     public void addClient(Client c){
-        clientSet.add(c);
+        DatabaseConnection.getInstance().insertClient(c);
     }
 
     public List<Client> getClienti(){
-        return new ArrayList<>(clientSet);
+        return DatabaseConnection.getInstance().getClients();
     }
 
     public Client getClientAfterCNP(String cnp){
-        for(Client client : clientSet){
+        for(Client client : this.getClienti()){
             if(client.getCNP() == cnp)
                 return client;
         }

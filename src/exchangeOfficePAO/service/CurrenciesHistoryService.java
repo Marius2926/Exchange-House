@@ -4,6 +4,7 @@ import exchangeOfficePAO.models.Currency;
 import exchangeOfficePAO.repository.CurrenciesHistoryRepository;
 import exchangeOfficePAO.repository.CurrenciesRepository;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -15,15 +16,15 @@ public class CurrenciesHistoryService {
         this.currenciesHistoryRepository = new CurrenciesHistoryRepository();
     }
 
-    public void addCurrenciesInHistory(Date date, List<Currency> currencyList){
+    public void addCurrenciesInHistory(LocalDate date, List<Currency> currencyList){
         currenciesHistoryRepository.addCurrenciesInHistory(date, currencyList);
     }
 
-    public Map<Date, CurrenciesRepository> getAllHistory(){
+    public Map<LocalDate,  List<Currency>> getAllHistory(){
         return currenciesHistoryRepository.getAllHistory();
     }
 
-    public CurrenciesRepository getHistoryDay(Date date){
+    public  List<Currency> getHistoryDay(LocalDate date){
         return currenciesHistoryRepository.getHistoryDay(date);
     }
 
@@ -31,10 +32,10 @@ public class CurrenciesHistoryService {
     public String toString() {
         String result = "Currences history { \n";
         CurrenciesRepository currenciesRepository;
-        for(Date date : this.getAllHistory().keySet()){
-            currenciesRepository = this.getHistoryDay(date);
+        for(LocalDate date : this.getAllHistory().keySet()){
+            List<Currency> currencyList = this.getHistoryDay(date);
             result += "{ " + date + "\n{";
-            for(Currency c : currenciesRepository.getCurrencyList())
+            for(Currency c : currencyList)
                 result += "\t" + c.toString() + "\n";
             result += "}\n";
         }

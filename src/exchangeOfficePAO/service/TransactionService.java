@@ -1,9 +1,10 @@
 package exchangeOfficePAO.service;
 
+import exchangeOfficePAO.models.Client;
 import exchangeOfficePAO.models.Transaction;
 import exchangeOfficePAO.repository.TransactionRepository;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -14,8 +15,8 @@ public class TransactionService {
         this.transactionRepository = new TransactionRepository();
     }
 
-    public void addTransaction(Transaction t){
-        transactionRepository.addTransaction(t);
+    public void addTransaction(Transaction t, Client c){
+        transactionRepository.addTransaction(t, c);
     }
 
     public List<Transaction> getTransactionRepository(){
@@ -26,7 +27,7 @@ public class TransactionService {
         return transactionRepository.getTransactionsAfterCNP(cnp);
     }
 
-    public List<Transaction> getTransactionsAfterDate(Date date){
+    public List<Transaction> getTransactionsAfterDate(LocalDate date){
         return transactionRepository.getTransactionsAfterDate(date);
     }
 

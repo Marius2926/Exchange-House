@@ -14,15 +14,17 @@ public class AuditService {
 
     public static AuditService getInstance(){
         if(auditService == null)
-          auditService = new AuditService();
+            auditService = new AuditService();
         return auditService;
     }
 
-    public void writeAction(String actionName, long actionTimestamp) throws IOException {
+    public void writeAction(String actionName, long actionTimestamp, String threadName) throws IOException {
         FileWriter fileWriter = new FileWriter(this.auditFile, true);
         fileWriter.append(actionName);
         fileWriter.append(',');
         fileWriter.append(String.valueOf(actionTimestamp));
+        fileWriter.append(',');
+        fileWriter.append(threadName);
         fileWriter.append('\n');
         fileWriter.close();
     }

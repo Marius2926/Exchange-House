@@ -1,10 +1,17 @@
 package exchangeOfficePAO.models;
 
+import java.time.LocalDate;
+
 public class Promoter extends Employee{
     static final private double baseSalary = 1200;
-    public Promoter(String firstName, String lastName, int experience) {
-        super(firstName, lastName, experience);
+    public Promoter(String firstName, String lastName, LocalDate hireDate) {
+        super(firstName, lastName, hireDate);
         this.calculateSalary();
+    }
+
+    @Override
+    public int getType() {
+        return 4;
     }
 
     @Override
@@ -19,7 +26,7 @@ public class Promoter extends Employee{
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", salary=" + salary +
-                ", experience=" + experience +
+                ", hireDate=" + hireDate.toString() +
                 "}\n";
     }
 }

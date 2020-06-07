@@ -1,30 +1,26 @@
 package exchangeOfficePAO.repository;
 
+import exchangeOfficePAO.database.DatabaseConnection;
 import exchangeOfficePAO.models.Employee;
-import exchangeOfficePAO.service.AuditService;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class EmployeeRepository {
-    List<Employee> employeeList;
 
     public EmployeeRepository() {
-        this.employeeList = new ArrayList<>();
     }
 
     public void addEmployee(Employee e){
-        employeeList.add(e);
+        DatabaseConnection.getInstance().insertEmployee(e);
     }
 
     public List<Employee> getEmployeeList(){
-        return employeeList;
+        return DatabaseConnection.getInstance().getEmployees();
     }
 
     public Employee getEmployeeAfterId(int id){
-        for(Employee employee : employeeList){
+        for(Employee employee : this.getEmployeeList()){
             if(employee.getId() == id)
                 return employee;
         }
