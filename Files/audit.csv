@@ -1,0 +1,14 @@
+Get currency after id = 1 and date = 2020-06-07,1591538188901,0
+Get address 3,1591538188948,3
+Get client 1001168258999,1591538188948,2
+Get currency after id = 1 and date = 2020-06-07,1591538188979,4
+New Transaction 1001168258999,1591538188979,1
+Get all employees,1591538188979,5
+Get all clients,1591538189026,6
+Get transactions for client 1000128256874,1591538189057,7
+Get all transactions,1591538189073,8
+Get transaction after date 2020-06-07,1591538189073,9
+Get currency after id = 0 and date = 2020-05-26,1591538189088,10
+Get all currencies for date 2020-06-06,1591538189104,11
+Tried to get transaction that doesn't exist - id = 4,1591538189104,12
+Tried to get employee that doesn't exist - id = 8,1591538189120,13

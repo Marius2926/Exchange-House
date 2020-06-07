@@ -79,10 +79,10 @@ public class ExchangeHouse {
 
     public void updateCurrenciesForToday(){
         List<Currency> currencyList = new ArrayList<>();
-        currencyList.add(new Currency("euro", 4.95, 4.76, 5000, 0));
-        currencyList.add(new Currency("dolar american", 4.55, 4.32, 5000, 1));
-        currencyList.add(new Currency("lira sterlina", 5.52, 5.20, 5000, 2));
-        currencyList.add(new Currency("franc elvetian", 4.65, 4.45, 5000, 3));
+        currencyList.add(new Currency("euro", 4.97, 4.76, 5000, 0));
+        currencyList.add(new Currency("dolar american", 4.57, 4.32, 5000, 1));
+        currencyList.add(new Currency("lira sterlina", 5.62, 5.20, 5000, 2));
+        currencyList.add(new Currency("franc elvetian", 4.55, 4.45, 5000, 3));
         currencyList.add(new Currency("corona suedeza", 0.5, 0.43, 5000, 4));
         currencyList.add(new Currency("dolar canadian", 3.25, 3.09, 5000, 5));
         currencyList.add(new Currency("corona ceha", 0.2, 0.14, 5000, 6));

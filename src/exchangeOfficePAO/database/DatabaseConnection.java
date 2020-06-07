@@ -1,476 +1,355 @@
 package exchangeOfficePAO.database;
 
 import exchangeOfficePAO.models.*;
+import exchangeOfficePAO.service.AuditService;
 
+import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatabaseConnection {
-    private static final String url = "jdbc:mysql://localhost:3306/exchangehouse";
-    private static final String username = "root";
-    private static final String password = "";
+public class DatabaseConnection  extends DatabaseOperations{
     private static DatabaseConnection databaseConnection = null;
-
+    private static int threadsNumber = 0;
     private DatabaseConnection(){}
 
-    synchronized static public DatabaseConnection getInstance(){
+    static public DatabaseConnection getInstance(){
         if(databaseConnection == null){
             databaseConnection = new DatabaseConnection();
         }
         return databaseConnection;
     }
 
-    synchronized public void insertEmployee(Employee employee){
-        try (Connection connection = DriverManager.getConnection(url, username, password)) {
-            Statement statement = connection.createStatement();
-            String query;
-            if (employee.getType() == 0) {
-                query = "INSERT INTO `exchangehouse`.`employee`\n" +
-                        "(`first_name`,\n" +
-                        "`last_name`,\n" +
-                        "`salary`,\n" +
-                        "`hire_date`,\n" +
-                        "`desk_number`,\n" +
-                        "`job_id`)\n" +
-                        "VALUES\n" +
-                        "( '" +
-                        employee.getFirstName() + "' , '" +
-                        employee.getLastName() + "' ," +
-                        employee.getSalary() + ", '" +
-                        employee.getHireDate() + "' ," +
-                        ((Cashier) employee).getDeskNo() + "," +
-                        employee.getType() + ");";
-            } else {
-                query = "INSERT INTO `exchangehouse`.`employee`\n" +
-                        "(`first_name`,\n" +
-                        "`last_name`,\n" +
-                        "`salary`,\n" +
-                        "`hire_date`,\n" +
-                        "`job_id`)\n" +
-                        "VALUES\n" +
-                        "('" +
-                        employee.getFirstName() + "' , '" +
-                        employee.getLastName() + "' ," +
-                        employee.getSalary() + ", '" +
-                        employee.getHireDate() + "' ," +
-                        employee.getType() + ");";
+    public void insertEmployee(Employee employee){
+        new Thread(() -> {
+            try {
+                super.insertEmployee(employee);
+                AuditService.getInstance().writeAction("New employee hired " + employee.getLastName(), new java.util.Date().getTime(), Thread.currentThread().getName());
+            } catch (SQLException | IOException throwables) {
+                throwables.printStackTrace();
             }
-            statement.executeUpdate(query);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            System.out.println(Thread.currentThread().getName());}, "" + threadsNumber).start();
+        threadsNumber++;
     }
 
-    synchronized public void insertCurrency(Currency c){
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            Statement statement = connection.createStatement();
-            LocalDate now = LocalDate.now();
-            String query = "INSERT INTO `exchangehouse`.`currency`\n" +
-                    "(`currency_id`,\n" +
-                    "`date`,\n" +
-                    "`name`,\n" +
-                    "`sell_price`,\n" +
-                    "`buy_price`,\n" +
-                    "`available`)\n" +
-                    "VALUES\n" +
-                    "( " +
-                    c.getId()  + ",\n'" +
-                    now + "',\n'" +
-                    c.getName() + "', \n" +
-                    c.getSellPrice() + ",\n" +
-                    c.getBuyPrice() + ",\n" +
-                    c.getAvailable() + ");\n";
-            statement.executeUpdate(query);
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
+    public void insertCurrency(Currency c){
+        new Thread(() -> {
+            try {
+                super.insertCurrency(c);
+                AuditService.getInstance().writeAction("Insert currency" + c.getName(), new java.util.Date().getTime(), Thread.currentThread().getName());
+            } catch (SQLException | IOException throwables) {
+                throwables.printStackTrace();
+            }
+            System.out.println(Thread.currentThread().getName());}, "" + threadsNumber).start();
+        threadsNumber++;
     }
 
-    private int getNewAddressId(){
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            Statement statement = connection.createStatement();
-            String query = "select coalesce(max(address_id), -1) 'id' from exchangehouse.address;";
-            ResultSet resultSet = statement.executeQuery(query);
-            if(resultSet.next()) {
-                return resultSet.getInt("id") + 1;
-            }else{
-                return -1;
-            }
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
-        return -1;
-    }
+//    public void insertClient(Client c){
+//       new Thread(() -> {super.insertClient(c);
+//           System.out.println(Thread.currentThread().getName());}, "" + threadsNumber).start();
+//       threadsNumber++;
+//    }
 
-    synchronized private int insertClientAddress(Address a){
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            Statement statement = connection.createStatement();
-            String query;
-            int availableId = getNewAddressId();
-            if(availableId >= 0) {
-                if (a.getTip() == 0) {
-                    query = "INSERT INTO `exchangehouse`.`address`\n" +
-                            "(`address_id`,\n" +
-                            "`type`,\n" +
-                            "`street`,\n" +
-                            "`street_number`)\n" +
-                            "VALUES\n(" +
-                            availableId + ",\n" +
-                            a.getTip() + ",\n'" +
-                            a.getStreet() + "',\n" +
-                            a.getNumberStreet() + ");";
-                } else {
-                    query = "INSERT INTO `exchangehouse`.`address`\n" +
-                            "(`address_id`,\n" +
-                            "`type`,\n" +
-                            "`street`,\n" +
-                            "`street_number`,\n" +
-                            "`flat_number`,\n" +
-                            "`floor`,\n" +
-                            "`building_number`)\n" +
-                            "VALUES\n(" +
-                            availableId + ",\n" +
-                            a.getTip() + ",\n'" +
-                            a.getStreet() + "',\n" +
-                            a.getNumberStreet() + ",\n" +
-                            a.getNumberApartment() + ",\n" +
-                            a.getFloor() + ",\n" +
-                            a.getNumberBloc() + ");";
-                }
-                statement.executeUpdate(query);
-                return availableId;
-            }else{
-                System.out.println("Addres insertion failed!");
+    public void insertTransaction(Transaction t, Client c){ // it is supposed that the currency and the amount required exist
+        Thread insertTransaction = new Thread(() -> {
+            try {
+                super.insertTransaction(t, c);
+                AuditService.getInstance().writeAction("New Transaction " + c.getCNP(), new java.util.Date().getTime(), Thread.currentThread().getName());
+            } catch (SQLException | IOException throwables) {
+                throwables.printStackTrace();
             }
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
-
-    synchronized public void insertClient(Client c){
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            Statement statement = connection.createStatement();
-            int address_id;
-            if((address_id = insertClientAddress(c.getAddress())) >= 0) {
-                c.getAddress().setAddressId(address_id);
-                String query = "INSERT INTO `exchangehouse`.`client`\n" +
-                        "(`cnp`,\n" +
-                        "`address_id`,\n" +
-                        "`first_name`,\n" +
-                        "`last_name`)\n" +
-                        "VALUES\n" +
-                        "('" + c.getCNP() + "',\n" +
-                        c.getAddress().getAddressId() + ",\n'" +
-                        c.getFirstName() + "',\n'" +
-                        c.getLastName() + "');";
-                statement.executeUpdate(query);
-            }else{
-                System.out.println("Client insertion failed!");
-            }
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
-    }
-
-    synchronized public void insertTransaction(Transaction t, Client c){ // it is supposed that the currency and the amount required exist
-        Client client = getClientAfterCNP(t.getCNP());
-        if(client == null){ //if it is a new client
-            insertClient(c);
-        }
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            Statement statement = connection.createStatement();
-            String query = "INSERT INTO `exchangehouse`.`transaction`\n" +
-                    "(`transaction_id`,\n" +
-                    "`currency_id`,\n" +
-                    "`date`,\n" +
-                    "`cnp`,\n" +
-                    "`type`,\n" +
-                    "`value`)\n" +
-                    "VALUES\n(" +
-                    t.getId() + ",\n" +
-                    t.getCurrencyId() + ",\n'" +
-                    t.getDate() + "',\n'" +
-                    t.getCNP() + "',\n" +
-                    t.getTip() + ",\n" +
-                    t.getValue() + ");\n";
-            statement.executeUpdate(query);
-            Currency currency = getCurrencyAfterIdDate(t.getCurrencyId(), LocalDate.now());
-            if(t.getTip() == 0){  // the client sold the currency, so the exchange house buy it
-                currency.setAvailable(currency.getAvailable() + t.getValue());
-            }else{
-                currency.setAvailable(currency.getAvailable() - t.getValue());
-            }
-        }catch(SQLException e){
+        }, "" + threadsNumber);
+        threadsNumber++;
+        insertTransaction.start();
+        try {
+            insertTransaction.join();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     public Address getAddressAfterId(int address_id) {
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            Statement statement = connection.createStatement();
-            String query = "select * from exchangehouse.address where address_id = " + address_id + ";";
-            ResultSet resultSet = statement.executeQuery(query);
-            if(resultSet.next()){
-                Address address = null;
-                int type = resultSet.getInt("type");
-                if(type == 0){
-                    address = new Address(resultSet.getString("street"), resultSet.getInt("street_number"));
-                }else{
-                    address = new Address(resultSet.getString("street"), resultSet.getInt("street_number"),
-                                          resultSet.getInt("building_number"), resultSet.getInt("floor"),
-                                          resultSet.getInt("flat_number"));
+        final Address[] address = new Address[1];
+        Thread getAddres = new Thread(() -> {
+            try {
+                address[0] = super.getAddressAfterId(address_id);
+                if(address[0] == null){
+                 AuditService.getInstance().writeAction("Tried to get address that doesn't exist - id = " + address_id, new java.util.Date().getTime(), Thread.currentThread().getName());
+                }else {
+                    AuditService.getInstance().writeAction("Get address " + address_id, new java.util.Date().getTime(), Thread.currentThread().getName());
                 }
-                return address;
-            }else{
-                return null;
+            } catch (SQLException | IOException throwables) {
+                throwables.printStackTrace();
             }
-        }catch(SQLException e){
+        }, "" + threadsNumber);
+        threadsNumber++;
+        getAddres.start();
+        try {
+            getAddres.join();
+            return address[0];
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return null;
     }
 
     public Client getClientAfterCNP(String cnp){
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            Statement statement = connection.createStatement();
-            String query = "select * from exchangehouse.client where cnp = '" + cnp + "';";
-            ResultSet resultSet = statement.executeQuery(query);
-            if(resultSet.next()){
-                Address address = getAddressAfterId(resultSet.getInt("address_id"));
-                Client client = new Client(resultSet.getString("first_name"), resultSet.getString("last_name"),
-                                           address, resultSet.getString("cnp"));
-                return client;
-            }else{
-                return null;
+        final Client[] client = new Client[1];
+        Thread getClient = new Thread(() -> {
+            try {
+                client[0] = super.getClientAfterCNP(cnp);
+                if(client[0] != null) {
+                    AuditService.getInstance().writeAction("Get client " + cnp, new java.util.Date().getTime(), Thread.currentThread().getName());
+                }else {
+                    AuditService.getInstance().writeAction("Tried to get client that doesn't exist - cnp =  " + cnp, new java.util.Date().getTime(), Thread.currentThread().getName());
+                }
+            } catch (SQLException | IOException throwables) {
+                throwables.printStackTrace();
             }
-        }catch(SQLException e){
+        }, "" + threadsNumber);
+        threadsNumber++;
+        getClient.start();
+        try {
+            getClient.join();
+            return client[0];
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return null;
     }
 
     public List<Transaction> getTransactionsAfterCNP(String cnp){
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            Statement statement = connection.createStatement();
-            String query = "select * from exchangehouse.transaction where cnp = '" + cnp + "';";
-            ResultSet resultSet = statement.executeQuery(query);
-            List<Transaction> transactionList = new ArrayList<>();
-            if(resultSet.next()){
-                LocalDate date;
-                Transaction transaction;
-                do{
-                    date = new java.sql.Date(resultSet.getDate("date").getTime()).toLocalDate();
-                    transaction = new Transaction(resultSet.getInt("type"), resultSet.getString("cnp"), resultSet.getInt("currency_id"), resultSet.getDouble("value"), date, resultSet.getInt("transaction_id"));
-                    transactionList.add(transaction);
-                }while (resultSet.next());
-            }else{
-                return null;
+        var ref = new Object(){
+            List<Transaction> transactionList;
+        };
+        Thread getTrans = new Thread(() -> {
+            try {
+                ref.transactionList = super.getTransactionsAfterCNP(cnp);
+                AuditService.getInstance().writeAction("Get transactions for client " + cnp, new java.util.Date().getTime(), Thread.currentThread().getName());
+            } catch (SQLException | IOException throwables) {
+                throwables.printStackTrace();
             }
-            return transactionList;
-        }catch(SQLException e){
+        }, "" + threadsNumber);
+        threadsNumber++;
+        getTrans.start();
+        try {
+            getTrans.join();
+            return ref.transactionList;
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return null;
     }
 
     public Currency getCurrencyAfterIdDate(int currency_id, LocalDate date){
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            Statement statement = connection.createStatement();
-            String query = "select * from exchangehouse.currency where currency_id = " + currency_id + " and date = '" + date + "';";
-            ResultSet resultSet = statement.executeQuery(query);
-            if(resultSet.next()){
-                Currency currency = new Currency(resultSet.getString("name"), resultSet.getDouble("sell_price"), resultSet.getDouble("buy_price"), resultSet.getDouble("available"), resultSet.getInt("currency_id"));
-                return currency;
-            }else{
-                return null;
+        final Currency[] currency = new Currency[1];
+        Thread getCurr = new Thread(() -> {
+            try {
+                currency[0] = super.getCurrencyAfterIdDate(currency_id, date);
+                if(currency[0] != null) {
+                    AuditService.getInstance().writeAction("Get currency after id = " + currency_id + " and date = " + date, new java.util.Date().getTime(), Thread.currentThread().getName());
+                }else {
+                    AuditService.getInstance().writeAction("Tried to get currency that doesn't exist - id = " + currency_id + " and date = " + date, new java.util.Date().getTime(), Thread.currentThread().getName());
+                }
+            } catch (SQLException | IOException throwables) {
+                throwables.printStackTrace();
             }
-        }catch(SQLException e){
+        }, "" + threadsNumber);
+        threadsNumber++;
+        getCurr.start();
+        try {
+            getCurr.join();
+            return currency[0];
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return null;
     }
 
     public List<Currency> getCurrencyForDate(LocalDate date){
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            Statement statement = connection.createStatement();
-            String query = "select * from exchangehouse.currency where date = '" + date + "';";
-            ResultSet resultSet = statement.executeQuery(query);
-            List<Currency> currencyList = new ArrayList<>();
-            if(resultSet.next()){
-                Currency currency;
-                do{
-                    currency = new Currency(resultSet.getString("name"), resultSet.getDouble("sell_price"), resultSet.getDouble("buy_price"), resultSet.getDouble("available"), resultSet.getInt("currency_id"));
-                    currencyList.add(currency);
-                }while (resultSet.next());
-            }else{
-                return null;
+        var ref = new Object(){
+            List<Currency> currencyList;
+        };
+        Thread getCurrs = new Thread(() -> {
+            try {
+                ref.currencyList = super.getCurrencyForDate(date);
+                AuditService.getInstance().writeAction("Get all currencies for date " + date, new java.util.Date().getTime(), Thread.currentThread().getName());
+            } catch (SQLException | IOException throwables) {
+                throwables.printStackTrace();
             }
-            return currencyList;
-        }catch(SQLException e){
+        }, "" + threadsNumber);
+        threadsNumber++;
+        getCurrs.start();
+        try {
+            getCurrs.join();
+            return ref.currencyList;
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    synchronized public void updateSellPriceCurrency(double sellPrice, int currencyId){
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            LocalDate now = LocalDate.now();
-            Statement statement = connection.createStatement();
-            String query = "update exchangehouse.currency set sell_price = " + sellPrice + "where currency_id = " + currencyId + " and date = '" + now + "';";
-            statement.executeUpdate(query);
-        }catch(SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    synchronized public void updateBuyPriceCurrency(double buyPrice, int currencyId){
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            LocalDate now = LocalDate.now();
-            Statement statement = connection.createStatement();
-            String query = "update exchangehouse.currency set buy_price = " + buyPrice + "where currency_id = " + currencyId + " and date = '" + now + "';";
-            statement.executeUpdate(query);
-        }catch(SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    synchronized public void updateAmountCurrency(double available, int currencyId){
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            LocalDate now = LocalDate.now();
-            Statement statement = connection.createStatement();
-            String query = "update exchangehouse.currency set available = " + available + "where currency_id = " + currencyId + " and date = '" + now + "';";
-            statement.executeUpdate(query);
-        }catch(SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public List<Client> getClients(){
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            Statement statement = connection.createStatement();
-            String query = "select * from exchangehouse.client cl join exchangehouse.address ad on cl.address_id = ad.address_id;";
-            ResultSet resultSet = statement.executeQuery(query);
-            List<Client> clientList = new ArrayList<>();
-            if(resultSet.next()){
-                Client client;
-                Address address;
-                do{
-                    if(resultSet.getInt("type") == 0) {
-                        address = new Address(resultSet.getString("street"), resultSet.getInt("street_number"));
-                    }else{
-                        address = new Address(resultSet.getString("street"), resultSet.getInt("street_number"),
-                                              resultSet.getInt("building_number"), resultSet.getInt("floor"),
-                                              resultSet.getInt("flat_number"));
-                    }
-                    address.setAddressId(resultSet.getInt("ad.address_id"));
-                    client = new Client(resultSet.getString("first_name"), resultSet.getString("last_name"), address, resultSet.getString("cnp"));
-                    clientList.add(client);
-                }while (resultSet.next());
-                return clientList;
-            }else{
-                return null;
+        var ref = new Object(){
+            List<Client> clientList;
+        };
+        Thread getClients = new Thread(() -> {
+            try {
+                ref.clientList = super.getClients();
+                AuditService.getInstance().writeAction("Get all clients", new java.util.Date().getTime(), Thread.currentThread().getName());
+            } catch (SQLException | IOException throwables) {
+                throwables.printStackTrace();
             }
-        }catch(SQLException e){
+        }, "" + threadsNumber);
+        threadsNumber++;
+        getClients.start();
+        try {
+            getClients.join();
+            return ref.clientList;
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return null;
     }
 
     public List<Employee> getEmployees() {
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            Statement statement = connection.createStatement();
-            String query = "select * from exchangehouse.employee;";
-            ResultSet resultSet = statement.executeQuery(query);
-            List<Employee> employeeList = new ArrayList<>();
-            int job_id;
-            if(resultSet.next()){
-                Employee employee;
-                do{
-                    employee = null;
-                    job_id = resultSet.getInt("job_id");
-                    switch (job_id){
-                        case 0:
-                            employee = new Cashier(resultSet.getString("first_name"), resultSet.getString("last_name"), new java.sql.Date(resultSet.getDate("hire_date").getTime()).toLocalDate(), resultSet.getInt("desk_number"));
-                            break;
-                        case 1:
-                            employee = new Guardian(resultSet.getString("first_name"), resultSet.getString("last_name"), new java.sql.Date(resultSet.getDate("hire_date").getTime()).toLocalDate());
-                            break;
-                        case 2:
-                            employee = new Janitor(resultSet.getString("first_name"), resultSet.getString("last_name"), new java.sql.Date(resultSet.getDate("hire_date").getTime()).toLocalDate());
-                            break;
-                        case 3:
-                            employee = new Manager(resultSet.getString("first_name"), resultSet.getString("last_name"), new java.sql.Date(resultSet.getDate("hire_date").getTime()).toLocalDate());
-                            break;
-                        case 4:
-                            employee = new Promoter(resultSet.getString("first_name"), resultSet.getString("last_name"), new java.sql.Date(resultSet.getDate("hire_date").getTime()).toLocalDate());
-                            break;
-                        case 5:
-                            employee = new Supervisor(resultSet.getString("first_name"), resultSet.getString("last_name"), new java.sql.Date(resultSet.getDate("hire_date").getTime()).toLocalDate());
-                            break;
-                        default:
-                            System.out.println("Unknown job_id found in database");
-                    }
-                    if(employee != null){
-                        employeeList.add(employee);
-                    }
-                }while (resultSet.next());
-                return employeeList;
-            }else{
-                return null;
+        var ref = new Object(){
+            List<Employee> employeeList;
+        };
+        Thread getEmps = new Thread(() -> {
+            try {
+                ref.employeeList = super.getEmployees();
+                AuditService.getInstance().writeAction("Get all employees", new java.util.Date().getTime(), Thread.currentThread().getName());
+            } catch (SQLException | IOException throwables) {
+                throwables.printStackTrace();
             }
-        }catch(SQLException e){
+        }, "" + threadsNumber);
+        threadsNumber++;
+        getEmps.start();
+        try {
+            getEmps.join();
+            return ref.employeeList;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Employee getEmployeeAfterId(int employeeId) {
+        final Employee[] employee = new Employee[1];
+        Thread getEmp = new Thread(() -> {
+            try {
+                employee[0] = super.getEmployeeAfterId(employeeId);
+                if(employee[0] != null) {
+                    AuditService.getInstance().writeAction("Get employee " + employeeId, new java.util.Date().getTime(), Thread.currentThread().getName());
+                }else{
+                    AuditService.getInstance().writeAction("Tried to get employee that doesn't exist - id = " + employeeId, new java.util.Date().getTime(), Thread.currentThread().getName());
+                }
+            } catch (SQLException | IOException throwables) {
+                throwables.printStackTrace();
+            }
+        }, "" + threadsNumber);
+        threadsNumber++;
+        getEmp.start();
+        try {
+            getEmp.join();
+            return employee[0];
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return null;
     }
 
     public List<Transaction> getTransactionsAfterDate(LocalDate date) {
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            Statement statement = connection.createStatement();
-            String query = "select * from exchangehouse.transaction where date = '" + date + "';";
-            ResultSet resultSet = statement.executeQuery(query);
-            List<Transaction> transactionList = new ArrayList<>();
-            if(resultSet.next()){
-                Transaction transaction;
-                do{
-                    transaction = new Transaction(resultSet.getInt("type"), resultSet.getString("cnp"), resultSet.getInt("currency_id"), resultSet.getDouble("value"), date, resultSet.getInt("transaction_id"));
-                    transactionList.add(transaction);
-                }while (resultSet.next());
-            }else{
-                return null;
+        var ref = new Object() {
+            List<Transaction> transactionList;
+        };
+        Thread getTrans = new Thread(() -> {
+            try {
+                ref.transactionList = super.getTransactionsAfterDate(date);
+                AuditService.getInstance().writeAction("Get transaction after date " + date.toString(), new java.util.Date().getTime(), Thread.currentThread().getName());
+            } catch (SQLException | IOException throwables) {
+                throwables.printStackTrace();
             }
-            return transactionList;
-        }catch(SQLException e){
+        }, "" + threadsNumber);
+        threadsNumber++;
+        getTrans.start();
+        try {
+            getTrans.join();
+            return ref.transactionList;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Transaction getTransactionsAfterId(int id) {
+        final Transaction[] transaction = new Transaction[1];
+        Thread getTran = new Thread(() -> {
+            try {
+                transaction[0] = super.getTransactionsAfterId(id);
+                if(transaction[0] != null) {
+                    AuditService.getInstance().writeAction("Get transaction " + id, new java.util.Date().getTime(), Thread.currentThread().getName());
+                }else{
+                    AuditService.getInstance().writeAction("Tried to get transaction that doesn't exist - id = " + id, new java.util.Date().getTime(), Thread.currentThread().getName());
+                }
+            } catch (SQLException | IOException throwables) {
+                throwables.printStackTrace();
+            }
+        }, "" + threadsNumber);
+        threadsNumber++;
+        getTran.start();
+        try {
+            getTran.join();
+            return transaction[0];
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return null;
     }
 
     public List<Transaction> getTransactions() {
-        try(Connection connection = DriverManager.getConnection(url, username, password)){
-            Statement statement = connection.createStatement();
-            String query = "select * from exchangehouse.transaction;";
-            ResultSet resultSet = statement.executeQuery(query);
-            List<Transaction> transactionList = new ArrayList<>();
-            if(resultSet.next()){
-                LocalDate date;
-                Transaction transaction;
-                do{
-                    date = new java.sql.Date(resultSet.getDate("date").getTime()).toLocalDate();
-                    transaction = new Transaction(resultSet.getInt("type"), resultSet.getString("cnp"), resultSet.getInt("currency_id"), resultSet.getDouble("value"), date, resultSet.getInt("transaction_id"));
-                    transactionList.add(transaction);
-                }while (resultSet.next());
-            }else{
-                return null;
+        var ref = new Object() {
+            List<Transaction> transactionList;
+        };
+        Thread getTrans = new Thread(() -> {
+            try {
+                ref.transactionList = super.getTransactions();
+                AuditService.getInstance().writeAction("Get all transactions", new java.util.Date().getTime(), Thread.currentThread().getName());
+            } catch (SQLException | IOException throwables) {
+                throwables.printStackTrace();
             }
-            return transactionList;
-        }catch(SQLException e){
+        }, "" + threadsNumber);
+        threadsNumber++;
+        getTrans.start();
+        try {
+            getTrans.join();
+            return ref.transactionList;
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return null;
     }
+
+    public void updateSellPriceCurrency(double sellPrice, int currencyId){
+        super.updateSellPriceCurrency(sellPrice, currencyId);
+    }
+
+    public void updateBuyPriceCurrency(double buyPrice, int currencyId){
+        super.updateBuyPriceCurrency(buyPrice, currencyId);
+    }
+
+    public void updateAmountCurrency(double available, int currencyId){
+        super.updateAmountCurrency(available, currencyId);
+    }
+
+    public void removeTransaction(int idTransaction){
+        super.removeTransaction(idTransaction);
+    }
+
+    public void fireEmployee(int employeeId){
+        super.fireEmployee(employeeId);
+    }
+
 }

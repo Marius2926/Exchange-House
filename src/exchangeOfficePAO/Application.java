@@ -23,11 +23,14 @@ public class Application {
         Address addressClient3 = new Address("Metalurgiei", 9);
         Client client3 = new Client("Gigica", "Dorel", addressClient3, "1001168258875");
 
+        Address addressClient4 = new Address("Soarelui", 9);
+        Client client4 = new Client("Gigica", "Gigi", addressClient4, "1001168258999");
+
 //        if(clientUtils.wantExchange(client1)){
 //            if(clientUtils.createTransaction(0, 1, 200, client1, exchangeHouse) == null){
 //                System.out.println("Nu se poate executa schimbul!");
 //            }else{
-//                System.out.println("Tranzactia a fost reusitea!");
+//                System.out.println("Tranzactia a fost reusita!");
 //            }
 //        }else{
 //            System.out.println(client1.toString() + " nu are datele valide!");
@@ -38,7 +41,7 @@ public class Application {
 //            if(clientUtils.createTransaction(0, 1, 600, client2, exchangeHouse) == null){
 //                System.out.println("Nu se poate executa schimbul!");
 //            }else{
-//                System.out.println("Tranzactia a fost reusitea!");
+//                System.out.println("Tranzactia a fost reusita!");
 //            }
 //        }else{
 //            System.out.println(client1.toString() + " nu are datele valide!");
@@ -48,10 +51,20 @@ public class Application {
 //            if(clientUtils.createTransaction(3, 1, 1000, client3, exchangeHouse) == null){
 //                System.out.println("Nu se poate executa schimbul!");
 //            }else{
-//                System.out.println("Tranzactia a fost reusitea!");
+//                System.out.println("Tranzactia a fost reusita!");
 //            }
 //        }else{
 //            System.out.println(client1.toString() + " nu are datele valide!");
+//        }
+
+//        if(clientUtils.wantExchange(client4)){
+//            if(clientUtils.createTransaction(0, 1, 200, client4, exchangeHouse) == null){
+//                System.out.println("Nu se poate executa schimbul!");
+//            }else{
+//                System.out.println("Tranzactia a fost reusita!");
+//            }
+//        }else{
+//            System.out.println(client4.toString() + " nu are datele valide!");
 //        }
 
         //afisam angajatii
@@ -63,7 +76,7 @@ public class Application {
         //afisam tranzactiile unui client
         List<Transaction> transactionList = exchangeHouse.getTransactionHistory().getTransactionsAfterCNP("1000128256874");
         if(transactionList == null) //clientul nu exista
-            System.out.println("Clientul cu cnp-ul " + "1000128256874" + "nu exista\n");
+            System.out.println("Clientul cu cnp-ul " + "1000128256874" + "nu are tranzactii.\n");
         else {
             System.out.println("Clientul cautat are urmatoarele tranzactii: \n");
             transactionList.forEach(System.out::println);
@@ -90,10 +103,27 @@ public class Application {
             System.out.println("Cursul avut de moneda ceruta la date ceruta: \n" + currency);
         }
 
+        //afisam cursul avut pe 06.06.2020
+        List<Currency> currencyList = exchangeHouse.getCurrencies().getCurrenciesRepository(LocalDate.of(2020, 6, 6));
+        if(currencyList == null){
+            System.out.println("Nu exista date despre cursul avut la data ceruta.\n");
+        }else {
+            System.out.println("Cursul pentru ziua ceruta este: \n");
+            currencyList.forEach(System.out::println);
+        }
+
         //facem update la pretul de vanzare/cumparare sau la suma disponibila a unei valute pentru ziua curenta
-        exchangeHouse.getDatabaseConnection().updateBuyPriceCurrency(0.45, 4);
+//        exchangeHouse.getDatabaseConnection().updateBuyPriceCurrency(0.45, 4);
 //        exchangeHouse.getDatabaseConnection().updateSellPriceCurrency(0.53, 4);
 //        exchangeHouse.getDatabaseConnection().updateAmountCurrency(50000, 4);
+
+
+        //stergem tranzactia dupa id si restituim banii clientului
+        exchangeHouse.getDatabaseConnection().removeTransaction(4);
+
+        //concediem un angajat
+        exchangeHouse.getDatabaseConnection().fireEmployee(8);
+
     }
 
 }
